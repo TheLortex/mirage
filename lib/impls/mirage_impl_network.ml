@@ -17,6 +17,7 @@ let network_conf (intf : string Key.key) =
     method! keys = [ key ]
     method! packages =
       Key.match_ Key.(value target) @@ function
+      | `Esp32 -> failwith "Network devices not supported on ESP32 target."
       | `Unix -> [ package ~min:"2.6.0" ~max:"3.0.0" "mirage-net-unix" ]
       | `MacOSX -> [ package ~min:"1.6.0" ~max:"2.0.0" "mirage-net-macosx" ]
       | `Xen -> [ package ~min:"1.12.0" ~max:"2.0.0" "mirage-net-xen"]

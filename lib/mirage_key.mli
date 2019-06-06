@@ -30,7 +30,7 @@ end
 
 include Functoria.KEY with module Arg := Arg
 
-type mode = [ `Unix | `Xen | `Qubes | `MacOSX | `Virtio | `Hvt | `Muen | `Genode ]
+type mode = [ `Unix | `Xen | `Qubes | `MacOSX | `Virtio | `Hvt | `Muen | `Genode | `Esp32 ]
 
 (** {2 Mirage keys} *)
 

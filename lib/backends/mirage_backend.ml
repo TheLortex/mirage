@@ -33,4 +33,5 @@ module Genode : S = Mirage_backend_freestanding.Genode
 module Xen    : S = Mirage_backend_xen
 module Qubes  : S = Mirage_backend_xen
 module Unix   : S = Mirage_backend_unix
+module Esp32  : S = Mirage_backend_esp32
 

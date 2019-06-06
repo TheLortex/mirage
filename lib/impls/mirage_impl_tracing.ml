@@ -17,6 +17,7 @@ let mprof_trace ~size () =
     method! keys = [ Key.abstract key ]
     method! packages =
       Key.match_ Key.(value target) @@ function
+      | `Esp32 -> failwith "Tracing not supported on ESP32 target."
       | `Xen | `Qubes ->
         [ package ~max:"1.0.0" "mirage-profile";
           package ~max:"1.0.0" "mirage-profile-xen" ]
@@ -31,6 +32,7 @@ let mprof_trace ~size () =
                      opam pin add lwt https://github.com/mirage/lwt.git#tracing"
       | Ok _ -> Ok ()
     method! connect i _ _ = match get_target i with
+      | `Esp32 -> failwith "Tracing not supported on ESP32 target."
       | `Virtio | `Hvt | `Muen | `Genode ->
         failwith  "tracing is not currently implemented for solo5 targets"
       | `Unix | `MacOSX ->

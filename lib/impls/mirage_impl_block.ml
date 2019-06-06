@@ -66,6 +66,7 @@ class block_conf file =
     method module_name = "Block"
     method! packages =
       Key.match_ Key.(value target) @@ function
+      | `Esp32 -> failwith "Block devices not supported on ESP32 target."
       | `Xen | `Qubes -> xen_block_packages
       | `Virtio | `Hvt | `Muen | `Genode ->
         [ package ~min:"0.4.0" ~max:"0.5.0" "mirage-block-solo5" ]
@@ -78,6 +79,7 @@ class block_conf file =
 
     method private connect_name target root =
       match target with
+      | `Esp32 -> failwith "Block devices supported on ESP32 target."
       | `Unix | `MacOSX | `Virtio | `Hvt | `Muen | `Genode ->
         Fpath.(to_string (root / file)) (* open the file directly *)
       | `Xen | `Qubes ->
@@ -87,6 +89,7 @@ class block_conf file =
     method! connect i s _ =
       match get_target i with
       | `Muen -> failwith "Block devices not supported on Muen target."
+      | `Esp32 -> failwith "Block devices not supported on ESP32 target."
       | `Unix | `MacOSX | `Virtio | `Hvt | `Xen | `Qubes | `Genode ->
         Fmt.strf "%s.connect %S" s
           (self#connect_name (get_target i) @@ Info.build_dir i)

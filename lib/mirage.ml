@@ -90,6 +90,7 @@ let target_module = function
   | `Genode -> (module Mirage_backend.Genode : Mirage_backend.S)
   | `Xen    -> (module Mirage_backend.Xen : Mirage_backend.S)
   | `Qubes  -> (module Mirage_backend.Qubes : Mirage_backend.S)
+  | `Esp32  -> (module Mirage_backend.Esp32 : Mirage_backend.S)
 
 let sxp_of_fmt fmt = Fmt.kstrf Sexplib.Sexp.of_string fmt
 

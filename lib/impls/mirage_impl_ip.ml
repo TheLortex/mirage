@@ -35,6 +35,7 @@ let (@??) x y = opt_map Key.abstract x @? y
 let right_tcpip_library ?ocamlfind ~sublibs pkg =
   let min = "3.7.1" and max = "3.8.0" in
   Key.match_ Key.(value target) @@ function
+  | `Esp32 -> failwith "TCPIP not supported on ESP32 target."
   |`MacOSX | `Unix
   |`Qubes  | `Xen
   |`Virtio | `Hvt | `Muen | `Genode ->

@@ -10,6 +10,7 @@ let stdlib_random_conf = object
   method module_name = "Mirage_random_stdlib"
   method! packages =
       Mirage_key.match_ Mirage_key.(value target) @@ function
+      | `Esp32 -> failwith "Random devices not supported on ESP32 target."
       | `Unix | `MacOSX ->
         [ package ~max:"0.1.0" "mirage-random-stdlib" ]
       | `Hvt | `Virtio | `Muen | `Genode ->
@@ -36,6 +37,7 @@ let nocrypto = impl @@ object
     method module_name = "Nocrypto_entropy"
     method! packages =
       Mirage_key.match_ Mirage_key.(value target) @@ function
+      | `Esp32 -> failwith "Random devices not supported on ESP32 target."
       | `Unix | `MacOSX ->
         [ package ~min:"0.5.4" ~max:"0.6.0" ~sublibs:["lwt"] "nocrypto" ;
           package "zarith"  ]
@@ -48,6 +50,7 @@ let nocrypto = impl @@ object
     method! build _ = Rresult.R.ok (enable_entropy ())
     method! connect i _ _ =
       match Mirage_impl_misc.get_target i with
+      | `Esp32 -> failwith "Random devices not supported on ESP32 target."
       | `Xen | `Qubes | `Virtio | `Hvt | `Muen | `Genode ->
         "Nocrypto_entropy_mirage.initialize ()"
       | `Unix | `MacOSX -> "Nocrypto_entropy_lwt.initialize ()"
