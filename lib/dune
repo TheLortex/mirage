@@ -1,4 +1,12 @@
 (library
+  (public_name mirage.key)
+  (name mirage_key)
+  (wrapped false)
+  (libraries functoria ipaddr logs astring functoria.app mirage-runtime bos sexplib)
+  (modules mirage_key))
+
+(library
   (public_name mirage)
   (wrapped     false)
-  (libraries ipaddr logs astring functoria functoria.app mirage-runtime bos sexplib))
+  (libraries mirage.impl mirage.backend)
+  (modules mirage))
