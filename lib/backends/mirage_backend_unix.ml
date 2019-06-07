@@ -1,23 +1,17 @@
 open Functoria
 open Mirage_backend_common
 
+include Default_backend
+
 let dependencies = [ package ~min:"3.2.0" ~max:"4.0.0" "mirage-unix" ]
 
 let alias_name = "unix"
-
-let custom_runtime = None
 
 let variant = "unix"
 
 let compilation_mode = Exe
 
 let ocaml_compilation_flags = ["-thread"]
-
-let ocaml_link_flags = []
-
-let extra_context = None
-
-let generate_extra_files _ ~root:_ ~name:_ = Ok ()
 
 let config_unix ~alias_name ~name ~binary_location =
   let alias = sxp_of_fmt {|
@@ -38,5 +32,3 @@ let config_unix ~alias_name ~name ~binary_location =
   Ok [alias; rule]
 
 let postbuild_rules _ = config_unix
-
-let clean ~name:_ = Ok ()

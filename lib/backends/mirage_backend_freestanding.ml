@@ -9,15 +9,13 @@ module Key = Mirage_key
 
 module Common = struct
 
-  let dependencies = [ package ~min:"0.5.0" ~max:"0.6.0" "mirage-solo5" ]
+  include Default_backend
 
-  let custom_runtime = None
+  let dependencies = [ package ~min:"0.5.0" ~max:"0.6.0" "mirage-solo5" ]
 
   let variant = "freestanding"
 
   let compilation_mode = Object
-
-  let ocaml_compilation_flags = []
 
   let ocaml_link_flags = ["(:include libs)"]
 
@@ -39,9 +37,6 @@ module Common = struct
     in
     [rule_ldflags; rule_cflags; rule_libs; rule_libdir; rule_ld]
 
-  let generate_extra_files _ ~root:_ ~name:_ = Ok ()
-
-  let clean ~name:_ = Ok ()
 end
 
 

@@ -6,6 +6,8 @@ open Rresult
 
 module Codegen = Functoria_app.Codegen
 
+include Default_backend
+
 let dependencies = [ package ~pin:"git+https://github.com/TheLortex/mirage-xen.git#impl-mirage-os-shim" "mirage-xen" ]
 
 let alias_name = "xen"
@@ -15,8 +17,6 @@ let custom_runtime = Some "xen"
 let variant = "xen"
 
 let compilation_mode = Object
-
-let ocaml_compilation_flags = []
 
 let ocaml_link_flags = ["(:include libs)"]
 

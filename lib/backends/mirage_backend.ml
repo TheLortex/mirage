@@ -10,6 +10,8 @@ module type S = sig
 
   val custom_runtime : string option
 
+  val cross_compile : string option
+
   val compilation_mode : compilation_mode
 
   val ocaml_compilation_flags : string list
@@ -17,6 +19,8 @@ module type S = sig
   val ocaml_link_flags : string list
 
   val extra_context : Sexplib.Sexp.t option
+
+  val extra_makefile : string
 
   val generate_extra_files : Functoria.Info.t -> root:string -> name:string -> (unit, [> Rresult.R.msg]) result
 

@@ -5,53 +5,45 @@ open Rresult
 
 module Codegen = Functoria_app.Codegen
 
-let dependencies = [ package ~min:"3.1.0" ~max:"4.0.0" "mirage-esp32" ]
+include Default_backend
+
+let dependencies = [ package "mirage-esp32" ]
 
 let alias_name = "esp32"
 
-let custom_runtime = None
+let cross_compile = Some "esp32"
 
 let variant = "esp32"
 
 let compilation_mode = Object
 
-let ocaml_compilation_flags = []
-
-let ocaml_link_flags = []
-
-let extra_context = Some (sxp_of_fmt {|
-  (context (opam
-    (name mirage-esp32)
-    (switch mirage-esp32)
-    (host default)
-  ))
-  |})
-
-let extra_makefile = {|
+let extra_makefile = "\
   PKG_CONFIG_PATH := $(shell opam config var share)/pkgconfig\n\
   export PKG_CONFIG_PATH\n\
   IDF_PATH := $(shell PKG_CONFIG_PATH='$(PKG_CONFIG_PATH)' pkg-config esp32-idf --libs --static)\n\
   export IDF_PATH\n\
+  main.native.o:\n\
+  \tmirage build\n\
+   _build-esp32/main/main.native.o: main.native.o\n\
+  \tcp main.native.o _build-esp32/main/main.native.o\n\
   .PHONY: size size-components flash monitor\n\
-  size:\n\
+  size: _build-esp32/main/main.native.o\n\
   \t$(MAKE) -C _build-esp32 size\n\
-  size-components:\n\
+  size-components: _build-esp32/main/main.native.o\n\
   \t$(MAKE) -C _build-esp32 size-components\n\
-  flash:\n\
+  flash _build-esp32/main/main.native.o:\n\
   \t$(MAKE) -C _build-esp32 flash\n\
-  monitor:\n\
+  monitor _build-esp32/main/main.native.o:\n\
   \t$(MAKE) -C _build-esp32 monitor\n\
   menuconfig:\n\
   \t$(MAKE) -C _build-esp32 menuconfig\n
-  |}
+"
 
-let config_esp32 ~alias_name ~name:_ ~binary_location =
-  let name = "_build-esp32/main/main.native.o"
-  in
+let config_esp32 ~alias_name ~name ~binary_location =
   let alias = sxp_of_fmt {|
     (alias
       (name %s)
-      (enabled_if (= %%{context_name} "mirage-esp32"))
+      (enabled_if (= %%{context_name} "default.esp32"))
       (deps %s))
     |} alias_name name
   in
@@ -60,7 +52,7 @@ let config_esp32 ~alias_name ~name:_ ~binary_location =
       (targets %s)
       (deps %s)
       (mode promote)
-      (action (run cp %s %s)))
+      (action (run ln -nfs %s %s)))
   |} name binary_location binary_location name
   in
   Ok [alias; rule]
@@ -125,5 +117,3 @@ let configure_idf_directory () =
     "startup-c.c"
 
 let generate_extra_files _ ~root:_ ~name:_ = configure_idf_directory ()
-
-let clean ~name:_ = Ok ()

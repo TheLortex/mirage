@@ -40,7 +40,7 @@ let noop = Functoria_app.noop
 let info = Functoria_app.info
 let app_info = Functoria_app.app_info ~type_modname:"Mirage_info" ()
 
-let configure_makefile ~no_depext ~opam_name =
+let configure_makefile ~no_depext ~opam_name extra_content =
   let open Codegen in
   let file = Fpath.(v "Makefile") in
   with_output file (fun oc () ->
@@ -65,8 +65,9 @@ let configure_makefile ~no_depext ~opam_name =
                   \tmirage build\n\
                   \n\
                   clean::\n\
-                  \tmirage clean\n"
-        opam_name opam_name opam_name depext;
+                  \tmirage clean\n
+                  %s"
+        opam_name opam_name opam_name depext extra_content;
       R.ok ())
     "Makefile"
 
@@ -223,11 +224,12 @@ let configure i =
   configure_dune_workspace i >>= fun () ->
   configure_opam ~name:opam_name i >>= fun () ->
   let no_depext = Key.(get ctx no_depext) in
-  configure_makefile ~no_depext ~opam_name >>= fun () ->
+  configure_makefile ~no_depext ~opam_name Target.extra_makefile >>= fun () ->
   Target.generate_extra_files i ~root ~name
 
-let cross_compile = function
-  | _ -> None
+let cross_compile target =
+  let (module Target) = target_module target in
+  Target.cross_compile
 
 let compile target =
   let target_name = Fmt.strf "%a" Key.pp_target target in
