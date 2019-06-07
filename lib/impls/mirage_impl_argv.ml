@@ -51,5 +51,6 @@ let default_argv =
     `Virtio, argv_solo5;
     `Hvt, argv_solo5;
     `Muen, argv_solo5;
-    `Genode, argv_solo5
+    `Genode, argv_solo5;
+    `Esp32, no_argv
   ] ~default:argv_unix
