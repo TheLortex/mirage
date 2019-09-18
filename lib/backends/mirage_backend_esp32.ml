@@ -7,7 +7,7 @@ module Codegen = Functoria_app.Codegen
 
 include Default_backend
 
-let dependencies = [ package "mirage-esp32" ]
+let dependencies = [ package ~pin:"git+https://github.com/well-typed-lightbulbs/mirage-esp32" "mirage-esp32" ]
 
 let alias_name = "esp32"
 
