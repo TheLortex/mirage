@@ -20,7 +20,7 @@ let compilation_mode = Object
 let extra_makefile = "\
   PKG_CONFIG_PATH := $(shell opam config var share)/pkgconfig\n\
   export PKG_CONFIG_PATH\n\
-  IDF_PATH := $(shell PKG_CONFIG_PATH='$(PKG_CONFIG_PATH)' pkg-config esp32-idf --libs --static)\n\
+  IDF_PATH := $(strip $(shell PKG_CONFIG_PATH='$(PKG_CONFIG_PATH)' pkg-config esp32-idf --libs --static))\n\
   export IDF_PATH\n\
   main.native.o:\n\
   \tmirage build\n\
@@ -39,13 +39,13 @@ let extra_makefile = "\
   \t$(MAKE) -C _build-esp32 menuconfig\n
 "
 
-let config_esp32 ~alias_name ~name ~binary_location =
+let config_esp32 ~alias_name ~name:_ ~binary_location =
   let alias = sxp_of_fmt {|
     (alias
       (name %s)
       (enabled_if (= %%{context_name} "default.esp32"))
       (deps %s))
-    |} alias_name name
+    |} alias_name "main.native.o"
   in
   let rule = sxp_of_fmt {|
     (rule
@@ -53,7 +53,7 @@ let config_esp32 ~alias_name ~name ~binary_location =
       (deps %s)
       (mode promote)
       (action (run ln -nfs %s %s)))
-  |} name binary_location binary_location name
+  |} "main.native.o" binary_location binary_location "main.native.o"
   in
   Ok [alias; rule]
 
@@ -117,3 +117,6 @@ let configure_idf_directory () =
     "startup-c.c"
 
 let generate_extra_files _ ~root:_ ~name:_ = configure_idf_directory ()
+
+let clean ~name:_ =
+  Bos.OS.Dir.delete Fpath.(v "_build-esp32")
