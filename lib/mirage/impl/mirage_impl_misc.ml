@@ -1,6 +1,7 @@
 open Functoria
 open Astring
 open Action.Infix
+open Action.Syntax
 
 let src = Logs.Src.create "mirage" ~doc:"mirage cli tool"
 
@@ -45,11 +46,11 @@ let rec expand_name ~lib param =
 (* Get the linker flags for any extra C objects we depend on.
  * This is needed when building a Xen/Solo5 image as we do the link manually. *)
 let extra_c_artifacts target pkgs =
-  Lazy.force opam_prefix >>= fun prefix ->
+  let* prefix = Lazy.force opam_prefix in
   let lib = prefix ^ "/lib" in
   let format = Fmt.strf "%%d\t%%(%s_linkopts)" target
   and predicates = "native" in
-  query_ocamlfind ~recursive:true ~format ~predicates pkgs >>= fun data ->
+  let* data = query_ocamlfind ~recursive:true ~format ~predicates pkgs in
   let r =
     List.fold_left
       (fun acc line ->

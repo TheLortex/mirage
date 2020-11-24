@@ -1,5 +1,5 @@
 open Functoria
-open Action.Infix
+open Action.Syntax
 open Astring
 module Key = Mirage_key
 module Log = Mirage_impl_misc.Log
@@ -93,7 +93,7 @@ let generate_manifest_json with_devices () =
     if with_devices then List.map to_string (networks @ blocks) else []
   in
   let s = String.concat ~sep:", " devices in
-  Action.with_output ~path:solo5_manifest_path
+  let* () = Action.with_output ~path:solo5_manifest_path
     ~purpose:"Solo5 application manifest file" (fun fmt ->
       Fmt.pf fmt
         {|{
@@ -103,21 +103,22 @@ let generate_manifest_json with_devices () =
 }
 |}
         s)
-  >>= fun () -> Action.write_file (Fpath.v "manifest.ml") ""
+  in 
+  Action.write_file (Fpath.v "manifest.ml") ""
 
 let configure i =
   let name = Info.name i in
   let target = Info.get i Key.target in
-  ( match target with
+  let* () = ( match target with
   | #solo5_target -> generate_manifest_json true ()
   | #xen_target -> generate_manifest_json false ()
   | _ -> assert false )
-  >>= fun () ->
+  in
   match target with
   | `Xen ->
-      Xen.configure_main_xl ~ext:"xl" i >>= fun () ->
-        Xen.configure_main_xl ~substitutions:[] ~ext:"xl.in" i
-      >>= fun () -> Libvirt.configure_main ~name
+      let* () = Xen.configure_main_xl ~ext:"xl" i in
+      let* () = Xen.configure_main_xl ~substitutions:[] ~ext:"xl.in" i in
+      Libvirt.configure_main ~name
   | `Virtio -> Libvirt.configure_virtio ~name
   | _ -> Action.ok ()
 

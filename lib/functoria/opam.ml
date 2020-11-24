@@ -17,6 +17,7 @@
  *)
 
 open Action.Infix
+open Action.Syntax
 
 let find_git () =
   let is_git p = Action.is_dir Fpath.(p / ".git") in
@@ -24,11 +25,11 @@ let find_git () =
   let rec find p path =
     if Fpath.is_root p then Action.ok None
     else
-      is_git p >>= fun has_git ->
+      let* has_git = is_git p in
       if has_git then Action.ok (Some path)
       else find (Fpath.parent p) (Some (app_opt path (Fpath.base p)))
   in
-  Action.pwd () >>= fun cwd ->
+  let* cwd = Action.pwd () in
   find cwd None >>= function
   | None -> Action.ok None
   | Some subdir ->

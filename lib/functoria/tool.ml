@@ -17,6 +17,7 @@
  *)
 
 open Action.Infix
+open Action.Syntax
 open DSL
 
 let src = Logs.Src.create "functoria.tool" ~doc:"functoria library"
@@ -112,10 +113,10 @@ module Make (P : S) = struct
 
   (* Generated a project skeleton and try to compile config.exe. *)
   let generate_project_skeleton ~save_args t ?ppf ?err_ppf argv =
-    generate_dune_project () >>= fun () ->
-    generate_base_dune_workspace () >>= fun () ->
-    generate_base_dune t >>= fun () ->
-    (if save_args then write_context t argv else Action.ok ()) >>= fun () ->
+    let* () = generate_dune_project () in
+    let* () = generate_base_dune_workspace () in
+    let* () = generate_base_dune t in
+    let* () = (if save_args then write_context t argv else Action.ok ()) in
     (* try to compile config.exe to detect early compilation errors. *)
     build_config_exe t ?ppf ?err_ppf ()
 
@@ -170,7 +171,7 @@ module Make (P : S) = struct
       | _ -> run_cmd ?ppf ?err_ppf Bos.Cmd.(v "dune" % "clean")
     in
     let rm_gen_files () =
-      Action.ls (Fpath.v ".") (fun file ->
+      let* files = Action.ls (Fpath.v ".") (fun file ->
           Fpath.parent file = Fpath.v "./"
           &&
           let base, ext = Fpath.split_ext file in
@@ -179,12 +180,13 @@ module Make (P : S) = struct
           | _, (".opam" | ".install" | ".locked") -> true
           | ("Makefile" | "dune-project" | "dune-workspace"), "" -> true
           | _ -> Logs.info (fun f -> f "Skipped %a" Fpath.pp file); false)
-      >>= fun files ->
-      Action.List.iter ~f:Filegen.rm files >>= fun () ->
-      remove_context args >>= fun () ->
+      in
+      let* () = Action.List.iter ~f:Filegen.rm files in
+      let* () = remove_context args in
       Filegen.rm Fpath.(build_dir args / "dune")
     in
-    dune_clean () >>= fun () -> rm_gen_files ()
+    let* () = dune_clean () in 
+    rm_gen_files ()
 
   (* App builder configuration *)
   let with_alias ~save_args args ~depext:_ ~extra_repo:_ ?ppf ?err_ppf argv =
@@ -217,7 +219,7 @@ module Make (P : S) = struct
   let help (t : 'a Cli.help_args) = try_to_re_exec t
 
   let clean (t : 'a Cli.clean_args) ?ppf ?err_ppf argv =
-    try_to_re_exec t argv >>= fun () -> (* First, delete app generated-files*)
+    let* () = try_to_re_exec t argv in (* First, delete app generated-files*)
     clean_files ?ppf ?err_ppf t (* Then, clean up artifacts used to build config.exe*)
 
   let run args action = action |> action_run args |> exit_err args

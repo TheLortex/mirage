@@ -17,7 +17,7 @@
  *)
 
 open Astring
-open Action.Infix
+open Action.Syntax
 module Key = Key
 module Package = Package
 module Info = Info
@@ -114,7 +114,7 @@ let default_opam_deps pkgs =
       % "--columns"
       % "name,version")
   in
-  Action.run_cmd_out cmd >>= fun deps ->
+  let* deps = Action.run_cmd_out cmd in
   let deps = String.cuts ~empty:false ~sep:"\n" deps in
   let deps =
     List.fold_left
@@ -138,12 +138,11 @@ let app_info ?(runtime_package = "functoria-runtime") ?opam_list
   let connect _ impl_name _ = Fmt.strf "return %s.info" impl_name in
   let configure i =
     Log.info (fun m -> m "Generating: %a (info)" Fpath.pp info_gen);
-    let packages =
+    let* opam =
       match opam_list with
       | None -> default_opam_deps (package_names i)
       | Some pkgs -> Action.ok (String.Map.of_list pkgs)
     in
-    packages >>= fun opam ->
     let ocl = String.Set.of_list (Info.libraries i) in
     Fmt.kstr
       (Action.write_file info_gen)

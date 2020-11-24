@@ -18,6 +18,7 @@
 
 open Astring
 open Action.Infix
+open Action.Syntax
 
 let src = Logs.Src.create "functoria.cache" ~doc:"functoria library"
 
@@ -45,7 +46,7 @@ let read file =
   Action.is_file file >>= function
   | false -> Action.ok empty
   | true -> (
-      Action.read_file file >>= fun args ->
+      let* args = Action.read_file file in
       let args = String.cuts ~sep:"\n" args in
       (* remove trailing '\n' *)
       let args = List.rev (List.tl (List.rev args)) in

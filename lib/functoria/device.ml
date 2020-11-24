@@ -16,7 +16,7 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *)
 
-open Action.Infix
+open Action.Syntax
 open Astring
 
 type abstract_key = Key.t
@@ -147,8 +147,9 @@ let extend ?packages ?packages_v ?dune ?pre_configure ?post_configure ?files t =
     Key.(pure List.append $ merge_packages packages packages_v $ t.packages)
   in
   let exec pre f post i =
-    exec_hook i pre >>= fun () ->
-    f i >>= fun () -> exec_hook i post
+    let* () = exec_hook i pre in
+    let* () = f i in 
+    exec_hook i post
   in
   let configure = exec pre_configure t.configure post_configure in
   let dune = Option.map (fun dune i -> t.dune i @ dune i) dune |> Option.value ~default:t.dune in

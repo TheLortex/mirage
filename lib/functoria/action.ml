@@ -671,6 +671,15 @@ module Infix = struct
   let ( >|= ) x f = map ~f x
 end
 
+module Syntax = struct
+  open Infix
+
+  let (let*) = ( >>= )
+
+  let (let+) = ( >|= )
+
+end
+
 module List = struct
   open Infix
 

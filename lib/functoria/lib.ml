@@ -17,6 +17,7 @@
  *)
 
 open Action.Infix
+open Action.Syntax
 open Astring
 open DSL
 module Name = Misc.Name
@@ -167,8 +168,8 @@ module Make (P : S) = struct
       | None when t.dot ->
           f Format.str_formatter;
           let data = Format.flush_str_formatter () in
-          Action.tmp_file ~mode:0o644 "graph%s.dot" >>= fun tmp ->
-          Action.write_file tmp data >>= fun () ->
+          let* tmp = Action.tmp_file ~mode:0o644 "graph%s.dot" in
+          let* () = Action.write_file tmp data in
           Action.run_cmd Bos.Cmd.(v t.dotcmd % p tmp)
       | None -> Action.ok (f Fmt.stdout)
       | Some s -> Action.with_output ~path:(Fpath.v s) ~purpose:"dot file" f
@@ -193,6 +194,7 @@ module Make (P : S) = struct
   let build _ =
     Fmt.pr "Use `dune build' instead.\n%!";
     Action.ok ()
+  
 
   let query ({ args; kind; depext; extra_repo; build_dir } : _ Cli.query_args) =
     let { Config.jobs; info; _ } = args.Cli.context in
@@ -307,32 +309,31 @@ module Make (P : S) = struct
     (* Get application name *)
     let name = P.name_of_target info in
     (* OPAM files *)
-    generate_opam `Global ~name args () >>= fun () ->
-    generate_opam `Local ~name args () >>= fun () ->
+    let* () = generate_opam `Global ~name args () in
+    let* () = generate_opam `Local ~name args () in
     (* Makefile: build and fetch dependencies *)
-    generate_makefile ~depext ~extra_repo name >>= fun () ->
+    let* () = generate_makefile ~depext ~extra_repo name in
     (* dune-project: defines project root *)
-    generate_dune `Project args () >>= fun () ->
+    let* () = generate_dune `Project args () in
     (* dune-workspace: defines compilation contexts *)
-    generate_dune `Workspace args () >>= fun () ->
+    let* () = generate_dune `Workspace args () in
     (* <build-dir>/dune: rules to build the application *)
-    generate_dune `Full args () >>= fun () ->
+    let* () = generate_dune `Full args () in
     (* Generate application specific-files *)
     let main = Info.main info in
     Log.info (fun m -> m "in dir %a" (Cli.pp_args (fun _ _ -> ())) args);
     let purpose = Fmt.strf "configure: create %a" Fpath.pp main in
     Log.info (fun m -> m "Generating: %a (main file)" Fpath.pp main);
-    Action.mkdir (config_dir args) >>= fun _ ->
-    Action.with_dir (config_dir args) (fun () ->
+    let* _ = Action.mkdir (config_dir args) in
+    let* () = Action.with_dir (config_dir args) (fun () ->
         (* Main file *)
-        Action.with_output ~path:main ~append:false ~purpose (fun ppf ->
-            Fmt.pf ppf "%a@.@." Fmt.text P.prelude)
-        >>= fun () ->
-        configure_main info init device_graph >>= fun () ->
+        let* () = Action.with_output ~path:main ~append:false ~purpose (fun ppf ->
+            Fmt.pf ppf "%a@.@." Fmt.text P.prelude) in
+        let* () = configure_main info init device_graph in
         (* Generate extra-code if needed *)
         Engine.configure info device_graph)
-    >>= fun () ->
-    Action.mkdir artifacts_dir >>= fun _ ->
+    in
+    let* _ = Action.mkdir artifacts_dir in
     let install = Key.eval (Info.context info) (Engine.install info jobs) in
     Action.with_output
       ~path:Fpath.(artifacts_dir / "dune")
@@ -412,7 +413,7 @@ module Make (P : S) = struct
     (*   whether to fully evaluate the graph *)
     let full_eval = Cli.peek_full_eval argv in
 
-    read_context args >>= fun cache ->
+    let* cache = read_context args in
     let base_context =
       (* Consider only the non-required keys. *)
       let non_required_term =
