@@ -1,0 +1,23 @@
+* Is_file? config/my_app.global.opam -> false
+* Write to config/my_app.global.opam (293 bytes)
+* Is_file? config/my_app.local.opam -> false
+* Write to config/my_app.local.opam (320 bytes)
+* Is_file? Makefile -> false
+* Write to Makefile (678 bytes)
+* Is_file? dune-project -> false
+* Write to dune-project (47 bytes)
+* Is_file? dune-workspace -> false
+* Write to dune-workspace (65 bytes)
+* Is_file? dune -> true
+* Read dune (224 bytes)
+* Mkdir config (created)
+* With_dir config [Write to main.ml (mode: default, purpose: configure: create main.ml)
+                   Write to main.ml (mode: default, purpose: Append to main.ml (connect))
+                   Write to main.ml (mode: default, purpose: Append to main.ml (connect))
+                   Write to main.ml (mode: default, purpose: Append to main.ml (connect))
+                   Write to main.ml (mode: default, purpose: Append to main.ml (emit_run))
+                   Write to key_gen.ml (mode: default, purpose: key_gen file)
+                   Write to vote (3 bytes)
+                   Write to warn_error (5 bytes)]
+* Mkdir dist (created)
+* Write to dist/dune (mode: default, purpose: configure: generate dune file promoting outputs)

@@ -1,0 +1,64 @@
+TEST(1)                           Test Manual                          TEST(1)
+
+
+
+NNAAMMEE
+       test - The tteesstt application builder
+
+SSYYNNOOPPSSIISS
+       tteesstt _C_O_M_M_A_N_D ...
+
+DDEESSCCRRIIPPTTIIOONN
+       The tteesstt application builder. It glues together a set of libraries and
+       configuration (e.g. network and storage) into a standalone unikernel or
+       UNIX binary.
+
+       Use tteesstt hheellpp <<ccoommmmaanndd>> for more information on a specific command.
+
+CCOOMMMMAANNDDSS
+       bbuuiilldd
+           Build a tteesstt application.
+
+       cclleeaann
+           Clean the files produced by tteesstt for a given application.
+
+       ccoonnffiigguurree
+           Configure a tteesstt application.
+
+       ddeessccrriibbee
+           Describe a tteesstt application.
+
+       hheellpp
+           Display help about tteesstt commands.
+
+       qquueerryy
+           Query information about the tteesstt application.
+
+OOPPTTIIOONNSS
+       ----hheellpp[=_F_M_T] (default=auto)
+           Show this help in format _F_M_T. The value _F_M_T must be one of `auto',
+           `pager', `groff' or `plain'. With `auto', the format is `pager` or
+           `plain' whenever the TTEERRMM env var is `dumb' or undefined.
+
+       ----vveerrssiioonn
+           Show version information.
+
+CCOOMMMMOONN OOPPTTIIOONNSS
+       ----ccoolloorr=_W_H_E_N (absent=auto)
+           Colorize the output. _W_H_E_N must be one of `auto', `always' or
+           `never'.
+
+       --qq, ----qquuiieett
+           Be quiet. Takes over --vv and ----vveerrbboossiittyy.
+
+       --vv, ----vveerrbboossee
+           Increase verbosity. Repeatable, but more than twice does not bring
+           more.
+
+       ----vveerrbboossiittyy=_L_E_V_E_L (absent=warning)
+           Be more or less verbose. _L_E_V_E_L must be one of `quiet', `error',
+           `warning', `info' or `debug'. Takes over --vv.
+
+
+
+Test 1.0~test                                                          TEST(1)

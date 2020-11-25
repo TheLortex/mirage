@@ -1,0 +1,9 @@
+(copy_files ./config/*)
+
+(executable
+  (public_name f0)
+  (package   functoria)
+  (name      main)
+  (modules   (:standard \ config))
+  (promote   (until-clean))
+  (libraries cmdliner fmt functoria-runtime))

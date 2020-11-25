@@ -1,0 +1,4 @@
+test: too many arguments, don't know what to do with `b', `c'
+Usage: test help [OPTION]... [TOPIC]
+Try `test help --help' or `test --help' for more information.
+(exit 1)

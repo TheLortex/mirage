@@ -17,23 +17,6 @@
   (action (diff configure.err.expected configure.err)))
 
 (rule
-  (target build)
-  (action
-    (with-stdout-to build
-    (with-stderr-to build.err
-      (with-accepted-exit-codes 1 (run ./test.exe build --vote=dog))))))
-
-(rule
-  (alias runtest)
-  (package functoria)
-  (action (diff build.expected build)))
-
-(rule
-  (alias runtest)
-  (package functoria)
-  (action (diff build.err.expected build.err)))
-
-(rule
   (target query)
   (action
     (with-stdout-to query
@@ -89,7 +72,7 @@
   (action
     (with-stdout-to clean
     (with-stderr-to clean.err
-      (with-accepted-exit-codes 0 (run ./test.exe clean --vote=dog))))))
+      (with-accepted-exit-codes 1 (run ./test.exe clean --vote=dog))))))
 
 (rule
   (alias runtest)

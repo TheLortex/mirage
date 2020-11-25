@@ -1,0 +1,13 @@
+* Is_file? config.ml -> true
+* Is_file? dune-project -> false
+* Is_file? dune-project -> false
+* Write to dune-project (47 bytes)
+* Is_file? dune-workspace -> false
+* Write to dune-workspace (65 bytes)
+* Is_file? dune -> true
+* Read dune (300 bytes)
+* Write to test.context (25 bytes)
+* Run_cmd 'dune build ./config.exe --root .' (ok)
+* Is_file? test.context -> true
+* Run_cmd_cli './_build/default/./config.exe configure help --dry-run --context
+               test.context' (ok)

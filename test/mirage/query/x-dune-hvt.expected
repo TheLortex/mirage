@@ -1,0 +1,43 @@
+(copy_files ./config/*)
+
+(executable
+ (enabled_if (= %{context_name} "mirage-hvt"))
+ (name main)
+ (modes (native object))
+ (libraries lwt mirage-bootvar-solo5 mirage-clock-freestanding mirage-logs
+   mirage-runtime mirage-solo5)
+ (link_flags -g -w +A-4-41-42-44 -bin-annot -strict-sequence -principal
+   -safe-string)
+ (modules (:standard \ config manifest))
+ (foreign_stubs (language c) (names manifest))
+)
+
+(rule
+ (targets manifest.c)
+ (deps manifest.json)
+ (action
+  (run solo5-elftool gen-manifest manifest.json manifest.c)))
+
+(rule
+ (target hvt-ldflags)
+ (action (with-stdout-to %{target}
+  (bash "env PKG_CONFIG_PATH=$(opam config var prefix)/lib/pkgconfig pkg-config --libs solo5-libc solo5-bindings-hvt")
+ ))
+)
+
+(rule
+  (target hvt-cflags.sxp)
+  (action (with-stdout-to %{target} (progn
+    (bash "echo '('")
+    (bash "env PKG_CONFIG_PATH=$(opam config var prefix)/lib/pkgconfig pkg-config --cflags solo5-bindings-hvt")
+    (bash "echo ')'")
+  )))
+)
+
+(rule
+ (target noop.hvt)
+ (enabled_if (= %{context_name} "mirage-hvt"))
+ (deps main.exe.o)
+ (action
+  (bash
+   "ld main.exe.o -o %{target} %{read:hvt-ldflags}")))
