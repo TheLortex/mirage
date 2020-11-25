@@ -1,22 +1,27 @@
 -include Makefile.user
 
+UNIKERNEL_NAME = noop
 OPAM = opam
 
-DEPEXT ?= $(OPAM) pin add -k path --no-action --yes noop . && \
-	    $(OPAM) depext --yes --update noop ;\
-	    $(OPAM) pin remove --no-action noop
+.PHONY: all depend depends clean build depext
 
-.PHONY: all depend depends clean build
+depext:
+	$(OPAM) pin add -k path --no-action --yes $(UNIKERNEL_NAME)-install .
+	$(OPAM) depext --yes --update $(UNIKERNEL_NAME)-install
+	$(OPAM) pin remove --no-action $(UNIKERNEL_NAME)-install
 
 all:: build
 
-depend depends::
-	$(DEPEXT)
-	$(OPAM) install -y --deps-only .
+depend depends::$(UNIKERNEL_NAME).opam.locked
+	$(OPAM) monorepo pull
+
+$(UNIKERNEL_NAME).opam.locked: $(UNIKERNEL_NAME).opam
+	$(MAKE) depext
+	$(OPAM) install ./$(UNIKERNEL_NAME)-install.opam --deps-only --yes
+	$(OPAM) monorepo lock --build-only
 
 build::
-	mirage build
+	dune build
 
 clean::
 	mirage clean
-

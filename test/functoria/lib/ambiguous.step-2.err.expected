@@ -1,0 +1,4 @@
+test: command `c' ambiguous and could be either `clean' or `configure'
+Usage: test COMMAND ...
+Try `test --help' for more information.
+(exit 1)

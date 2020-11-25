@@ -31,6 +31,8 @@ let list_files dir =
 
 let root = Fpath.(v "test" / "functoria" / "e2e" / "app")
 
+let build_root = Fpath.(v "_build" / "default" // root)
+
 let config_ml = Fpath.(root / "config.ml")
 
 let get_ok = function Ok x -> x | Error (`Msg e) -> Alcotest.fail e
@@ -38,8 +40,7 @@ let get_ok = function Ok x -> x | Error (`Msg e) -> Alcotest.fail e
 let read_file file = get_ok @@ Bos.OS.File.read file
 
 let clean () =
-  let dir = Fpath.(v "_build" / "default" // root) in
-  get_ok @@ Bos.OS.Dir.delete ~recurse:true dir;
+  get_ok @@ Bos.OS.Dir.delete ~recurse:true build_root;
   let files = list_files root in
   List.iter
     (fun f ->
@@ -48,7 +49,15 @@ let clean () =
       | _ ->
           if Rresult.R.get_ok @@ Bos.OS.Dir.exists Fpath.(root / f) then ()
           else get_ok @@ Bos.OS.File.delete Fpath.(root / f))
-    files
+    files;
+  let root_files = list_files (Fpath.v "./") in
+  List.iter
+    (fun f ->
+      match Filename.basename f with
+      | "dune-workspace" | "noop.opam" ->
+          Rresult.R.get_ok @@ Bos.OS.File.delete (Fpath.v f)
+      | _ -> ())
+    root_files
 
 let test ?err_ppf ?help_ppf fmt =
   Fmt.kstrf
@@ -105,6 +114,7 @@ let test_configure () =
       "key_gen.ml";
       "main.ml";
       "test.context";
+      "dune";
     ]
     (list_files root);
   clean ();
@@ -186,7 +196,7 @@ let test_build () =
   test "build --file %a" Fpath.pp config_ml;
   Alcotest.(check bool)
     "toto.exe should be built" true
-    (Sys.file_exists Fpath.(to_string (root / "toto.exe")));
+    (Sys.file_exists Fpath.(to_string (build_root / "toto.exe")));
   clean ()
 
 let test_keys () =
@@ -194,14 +204,14 @@ let test_keys () =
   test "build --file %a" Fpath.pp config_ml;
   Alcotest.(check string)
     "vote contains the default value: cat" "cat"
-    (read_file Fpath.(root / "vote"));
+    (read_file Fpath.(build_root / "vote"));
   clean ();
 
   test "configure --file %a --vote=dog" Fpath.pp config_ml;
   test "build --file %a" Fpath.pp config_ml;
   Alcotest.(check string)
     "vote contains dog" "dog"
-    (read_file Fpath.(root / "vote"));
+    (read_file Fpath.(build_root / "vote"));
   clean ()
 
 let test_clean () =
@@ -215,8 +225,10 @@ let test_cache () =
   let str = "foo;;bar;;;\n\nllll;;;sdaads;;\n\t\\0" in
   test "configure --file %a --vote=%s" Fpath.pp config_ml str;
   test "build --file %a" Fpath.pp config_ml;
-  Alcotest.(check string) "cache is valid" str (read_file Fpath.(root / "vote"));
-  test "clean --file %a" Fpath.pp config_ml
+  Alcotest.(check string)
+    "cache is valid" str
+    (read_file Fpath.(build_root / "vote"));
+  clean ()
 
 let test_help () =
   let help_ppf = Fmt.with_buffer (Buffer.create 10) in

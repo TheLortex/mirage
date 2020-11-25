@@ -1,0 +1,77 @@
+TEST-CONFIGURE(1)                 Test Manual                TEST-CONFIGURE(1)
+
+
+
+NNAAMMEE
+       test-configure - Configure a tteesstt application.
+
+SSYYNNOOPPSSIISS
+       tteesstt ccoonnffiigguurree [_O_P_T_I_O_N]...
+
+DDEESSCCRRIIPPTTIIOONN
+       The ccoonnffiigguurree command initializes a fresh tteesstt application.
+
+CCOONNFFIIGGUURREE OOPPTTIIOONNSS
+       ----ccoonntteexxtt--ffiillee=_F_I_L_E (absent=test.context)
+           The context file to use.
+
+       ----ddeeppeexxtt
+           Enable call to `opam depext' in the project Makefile.
+
+       ----ddrryy--rruunn
+           Display I/O actions instead of executing them.
+
+       ----dduunniivveerrssee--iinniitt=_U_R_L (absent DDUUNNIIVVEERRSSEE__IINNIITT env)
+           Alternate opam-repository overlay used by `duniverse init' to
+           gather local sources.
+
+       --ff _F_I_L_E, ----ffiillee=_F_I_L_E, ----ccoonnffiigg--ffiillee=_F_I_L_E (absent=config.ml)
+           The configuration file to use.
+
+       ----nnoo--ddeeppeexxtt
+           Disable call to `opam depext' in the project Makefile.
+
+       --oo _F_I_L_E, ----oouuttppuutt=_F_I_L_E
+           Name of the output file.
+
+AAPPPPLLIICCAATTIIOONN OOPPTTIIOONNSS
+       ----vvoottee=_V_O_T_E (absent=cat)
+           Vote.
+
+       ----wwaarrnn--eerrrroorr=_B_O_O_L (absent=false)
+           Enable -warn-error when compiling OCaml sources.
+
+OOPPTTIIOONNSS
+       ----hheellpp[=_F_M_T] (default=auto)
+           Show this help in format _F_M_T. The value _F_M_T must be one of `auto',
+           `pager', `groff' or `plain'. With `auto', the format is `pager` or
+           `plain' whenever the TTEERRMM env var is `dumb' or undefined.
+
+       ----vveerrssiioonn
+           Show version information.
+
+CCOOMMMMOONN OOPPTTIIOONNSS
+       ----ccoolloorr=_W_H_E_N (absent=auto)
+           Colorize the output. _W_H_E_N must be one of `auto', `always' or
+           `never'.
+
+       --qq, ----qquuiieett
+           Be quiet. Takes over --vv and ----vveerrbboossiittyy.
+
+       --vv, ----vveerrbboossee
+           Increase verbosity. Repeatable, but more than twice does not bring
+           more.
+
+       ----vveerrbboossiittyy=_L_E_V_E_L (absent=warning)
+           Be more or less verbose. _L_E_V_E_L must be one of `quiet', `error',
+           `warning', `info' or `debug'. Takes over --vv.
+
+EENNVVIIRROONNMMEENNTT
+       These environment variables affect the execution of ccoonnffiigguurree:
+
+       DDUUNNIIVVEERRSSEE__IINNIITT
+           See option ----dduunniivveerrssee--iinniitt.
+
+
+
+Test 1.0~test                                                TEST-CONFIGURE(1)

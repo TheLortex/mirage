@@ -1,0 +1,18 @@
+(copy_files ./config/*)
+
+(rule
+ (target noop)
+ (enabled_if (= %{context_name} "default"))
+ (action
+  (copy main.exe %{target})))
+
+(executable
+ (name main)
+ (libraries lwt mirage-bootvar-unix mirage-clock-unix mirage-logs
+   mirage-runtime mirage-unix)
+ (link_flags (-thread))
+ (modules (:standard \ config))
+ (flags -g -w +A-4-41-42-44 -bin-annot -strict-sequence -principal
+   -safe-string)
+ (enabled_if (= %{context_name} "default"))
+)

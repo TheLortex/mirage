@@ -78,3 +78,8 @@ let merge t term =
   Cmdliner.Term.(pure f $ term)
 
 let peek_output t = Cli.peek_output t
+
+let file ~name args =
+  match args.Cli.context_file with
+  | Some f -> f
+  | None -> Fpath.(v (name ^ ".context"))

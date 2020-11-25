@@ -1,50 +1,36 @@
 open Functoria
-open Action.Infix
 module Key = Mirage_key
 
 let choose : Key.mode -> (module S.TARGET) = function
   | #Solo5.t -> (module Solo5)
   | #Unix.t -> (module Unix)
 
-let packages target =
+let dune i = 
+  let target = Info.get i Key.target in 
   let (module Target) = choose target in
-  Target.(packages (cast target))
-
-let install i =
-  let target = Info.get i Key.target in
-  let (module Target) = choose target in
-  Target.install i
-
-let link ~name i =
-  let target = Info.get i Key.target in
-  let (module Target) = choose target in
-  Target.link ~name i
-
-let configure i =
-  let target = Info.get i Key.target in
+  Target.dune i
+    
+let configure i = 
+  let target = Info.get i Key.target in 
   let (module Target) = choose target in
   Target.configure i
 
-let configure_files i =
-  let target = Info.get i Key.target in
+let build_context ?build_dir i = 
+  let target = Info.get i Key.target in 
   let (module Target) = choose target in
-  Target.configure_files i
+  Target.build_context ?build_dir i
 
-let build i =
-  let target = Info.get i Key.target in
+let context_name i = 
+  let target = Info.get i Key.target in 
   let (module Target) = choose target in
-  Target.build i
+  Target.context_name i
 
-let result target =
+let packages target = 
   let (module Target) = choose target in
-  Target.result
+  Target.(packages (cast target))
 
-let dontlink target =
+let install i = 
+  let target = Info.get i Key.target in 
   let (module Target) = choose target in
-  Target.dontlink
+  Target.install i
 
-let ocamlbuild_tags target =
-  let (module Target) = choose target in
-  Target.ocamlbuild_tags
-
-let clean i = Solo5.clean i >>= fun () -> Unix.clean i

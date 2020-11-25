@@ -86,6 +86,10 @@ CONFIGURE OPTIONS
        --dry-run
            Display I/O actions instead of executing them.
 
+       --extra-repo=URL (absent MIRAGE_EXTRA_REPO env)
+           Additional opam-repository to use when using `opam monorepo lock'
+           to gather local sources.
+
        -f FILE, --file=FILE, --config-file=FILE (absent=config.ml)
            The configuration file to use.
 
@@ -126,6 +130,9 @@ COMMON OPTIONS
 
 ENVIRONMENT
        These environment variables affect the execution of configure:
+
+       MIRAGE_EXTRA_REPO
+           See option --extra-repo.
 
        MIRAGE_LOGS
            See option --logs.

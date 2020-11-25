@@ -1,0 +1,26 @@
+opam-version: "2.0"
+name: "noop"
+maintainer: "dummy"
+authors: "dummy"
+homepage: "dummy"
+bug-reports: "dummy"
+dev-repo: "git://dummy"
+synopsis: "Unikernel noop - main opam file"
+description: """
+It assumes that local dependencies are already
+fetched, and the mirage.context is present in the source tree.
+"""
+
+build: [
+  [ "test" "configure"  ]
+  [ "test" "build" ]
+]
+
+install: [
+  [ "cp" "dist/f0.exe" "%{bin}%/f0" ]
+]
+
+depends: [
+  
+]
+

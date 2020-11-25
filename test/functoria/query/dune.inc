@@ -19,21 +19,39 @@
 
 (rule
  (action
-  (with-stdout-to opam
-  (with-stderr-to opam.err
-   (run ./config.exe query opam)))))
+  (with-stdout-to local.opam
+  (with-stderr-to local.opam.err
+   (run ./config.exe query local.opam)))))
 
 (rule
  (alias runtest)
  (package functoria)
  (action
-  (diff opam.expected opam)))
+  (diff local.opam.expected local.opam)))
 
 (rule
  (alias runtest)
  (package functoria)
  (action
-  (diff opam.err.expected opam.err)))
+  (diff local.opam.err.expected local.opam.err)))
+
+(rule
+ (action
+  (with-stdout-to global.opam
+  (with-stderr-to global.opam.err
+   (run ./config.exe query global.opam)))))
+
+(rule
+ (alias runtest)
+ (package functoria)
+ (action
+  (diff global.opam.expected global.opam)))
+
+(rule
+ (alias runtest)
+ (package functoria)
+ (action
+  (diff global.opam.err.expected global.opam.err)))
 
 (rule
  (action
@@ -55,57 +73,21 @@
 
 (rule
  (action
-  (with-stdout-to install
-  (with-stderr-to install.err
-   (run ./config.exe query install)))))
+  (with-stdout-to files
+  (with-stderr-to files.err
+   (run ./config.exe query files)))))
 
 (rule
  (alias runtest)
  (package functoria)
  (action
-  (diff install.expected install)))
+  (diff files.expected files)))
 
 (rule
  (alias runtest)
  (package functoria)
  (action
-  (diff install.err.expected install.err)))
-
-(rule
- (action
-  (with-stdout-to files-configure
-  (with-stderr-to files-configure.err
-   (run ./config.exe query files-configure)))))
-
-(rule
- (alias runtest)
- (package functoria)
- (action
-  (diff files-configure.expected files-configure)))
-
-(rule
- (alias runtest)
- (package functoria)
- (action
-  (diff files-configure.err.expected files-configure.err)))
-
-(rule
- (action
-  (with-stdout-to files-build
-  (with-stderr-to files-build.err
-   (run ./config.exe query files-build)))))
-
-(rule
- (alias runtest)
- (package functoria)
- (action
-  (diff files-build.expected files-build)))
-
-(rule
- (alias runtest)
- (package functoria)
- (action
-  (diff files-build.err.expected files-build.err)))
+  (diff files.err.expected files.err)))
 
 (rule
  (action
@@ -147,7 +129,7 @@
  (action
   (with-stdout-to Makefile.depext
   (with-stderr-to Makefile.depext.err
-   (run ./config.exe query Makefile --depext)))))
+   (run ./config.exe query Makefile --depext --extra-repo URL)))))
 
 (rule
  (alias runtest)
@@ -178,3 +160,75 @@
  (package functoria)
  (action
   (diff version.err.expected version.err)))
+
+(rule
+ (action
+  (with-stdout-to x-dune
+  (with-stderr-to x-dune.err
+   (run ./config.exe query dune)))))
+
+(rule
+ (alias runtest)
+ (package functoria)
+ (action
+  (diff x-dune.expected x-dune)))
+
+(rule
+ (alias runtest)
+ (package functoria)
+ (action
+  (diff x-dune.err.expected x-dune.err)))
+
+(rule
+ (action
+  (with-stdout-to x-dune-base
+  (with-stderr-to x-dune-base.err
+   (run ./config.exe query dune-base)))))
+
+(rule
+ (alias runtest)
+ (package functoria)
+ (action
+  (diff x-dune-base.expected x-dune-base)))
+
+(rule
+ (alias runtest)
+ (package functoria)
+ (action
+  (diff x-dune-base.err.expected x-dune-base.err)))
+
+(rule
+ (action
+  (with-stdout-to x-dune-project
+  (with-stderr-to x-dune-project.err
+   (run ./config.exe query dune-project)))))
+
+(rule
+ (alias runtest)
+ (package functoria)
+ (action
+  (diff x-dune-project.expected x-dune-project)))
+
+(rule
+ (alias runtest)
+ (package functoria)
+ (action
+  (diff x-dune-project.err.expected x-dune-project.err)))
+
+(rule
+ (action
+  (with-stdout-to x-dune-workspace
+  (with-stderr-to x-dune-workspace.err
+   (run ./config.exe query dune-workspace)))))
+
+(rule
+ (alias runtest)
+ (package functoria)
+ (action
+  (diff x-dune-workspace.expected x-dune-workspace)))
+
+(rule
+ (alias runtest)
+ (package functoria)
+ (action
+  (diff x-dune-workspace.err.expected x-dune-workspace.err)))

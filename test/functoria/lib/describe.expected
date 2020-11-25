@@ -1,0 +1,3 @@
+Name       my_app
+Keys       vote=cat (default),
+           warn_error=false (default)

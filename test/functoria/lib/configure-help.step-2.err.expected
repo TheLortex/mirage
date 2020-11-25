@@ -1,0 +1,4 @@
+test: too many arguments, don't know what to do with `help'
+Usage: test configure [OPTION]... 
+Try `test configure --help' or `test --help' for more information.
+(exit 1)

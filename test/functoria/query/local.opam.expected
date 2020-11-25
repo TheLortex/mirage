@@ -1,0 +1,14 @@
+opam-version: "2.0"
+name: "noop"
+maintainer: "dummy"
+authors: "dummy"
+homepage: "dummy"
+bug-reports: "dummy"
+dev-repo: "git://dummy"
+synopsis: "Unikernel noop - local dependencies"
+
+depends: [
+  "fmt"
+  "functoria-runtime"
+]
+

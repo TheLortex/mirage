@@ -29,13 +29,19 @@ let () =
   List.iter gen
     [
       v "name";
-      v "opam";
+      v "local.opam";
+      v "global.opam";
       v "packages";
-      v "install";
-      v "files-configure";
-      v "files-build";
+      v "files";
       v "Makefile";
       { file = "Makefile.no-depext"; cmd = "query Makefile --no-depext" };
-      { file = "Makefile.depext"; cmd = "query Makefile --depext" };
+      {
+        file = "Makefile.depext";
+        cmd = "query Makefile --depext --extra-repo URL";
+      };
       { file = "version"; cmd = "query --version" };
+      { file = "x-dune"; cmd = "query dune" };
+      { file = "x-dune-base"; cmd = "query dune-base" };
+      { file = "x-dune-project"; cmd = "query dune-project" };
+      { file = "x-dune-workspace"; cmd = "query dune-workspace" };
     ]

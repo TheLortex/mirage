@@ -14,8 +14,15 @@ UNIKERNEL PARAMETERS
            for every log sources but the foo which is set to debug. 
 
 QUERY OPTIONS
+       --build-dir=DIR
+           The build directory.
+
        --depext
            Enable call to `opam depext' in the project Makefile.
+
+       --extra-repo=URL (absent MIRAGE_EXTRA_REPO env)
+           Additional opam-repository to use when using `opam monorepo lock'
+           to gather local sources.
 
        --no-depext
            Disable call to `opam depext' in the project Makefile.
@@ -98,7 +105,8 @@ CONFIGURE OPTIONS
 
        INFO (absent=packages)
            The information to query. INFO must be one of `name', `packages',
-           `opam', `install', `files-configure', `files-build' or `Makefile'
+           `local.opam', `global.opam', `files', `Makefile', `dune-base',
+           `dune', `dune-project' or `dune-workspace'
 
 APPLICATION OPTIONS
        --hello=VAL (absent=Hello World!)
@@ -131,6 +139,9 @@ COMMON OPTIONS
 
 ENVIRONMENT
        These environment variables affect the execution of query:
+
+       MIRAGE_EXTRA_REPO
+           See option --extra-repo.
 
        MIRAGE_LOGS
            See option --logs.

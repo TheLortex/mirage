@@ -96,7 +96,11 @@ val match_impl : 'b value -> default:'a impl -> ('b * 'a impl) list -> 'a impl
 type package = Package.t
 (** The type for opam packages. *)
 
+type kind = Package.kind
+(** Installation kind of a package. *)
+
 val package :
+  ?kind:kind ->
   ?build:bool ->
   ?sublibs:string list ->
   ?libs:string list ->
@@ -156,16 +160,15 @@ val of_device : 'a device -> 'a impl
 
 val impl :
   ?packages:package list ->
-  ?packages_v:package list Key.value ->
+  ?packages_v:package list value ->
   ?install:(Info.t -> Install.t) ->
   ?install_v:(Info.t -> Install.t Key.value) ->
   ?keys:Key.t list ->
   ?extra_deps:abstract_impl list ->
   ?connect:(info -> string -> string list -> string) ->
+  ?dune:(info -> Dune.stanza list) ->
   ?configure:(info -> unit Action.t) ->
-  ?files:(info -> [ `Configure | `Build ] -> Fpath.t list) ->
-  ?build:(info -> unit Action.t) ->
-  ?clean:(info -> unit Action.t) ->
+  ?files:(info -> Fpath.t list) ->
   string ->
   'a typ ->
   'a impl
