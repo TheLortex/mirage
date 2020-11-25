@@ -18,21 +18,8 @@ type t = [ solo5_target | xen_target ]
 
 let cast = function #t as t -> t | _ -> invalid_arg "not a solo5 target."
 
-let build_package target =
-  match target with
-  | `Virtio -> "solo5-bindings-virtio"
-  | `Muen -> "solo5-bindings-muen"
-  | `Hvt -> "solo5-bindings-hvt"
-  | `Genode -> "solo5-bindings-genode"
-  | `Spt -> "solo5-bindings-spt"
-  | `Xen | `Qubes -> "solo5-bindings-xen"
-  | _ -> invalid_arg "not a solo5 target"
-
-let build_packages target =
-  [
-    Functoria.package ~kind:`Global ~build:true (build_package target);
-    Functoria.package ~kind:`Global ~build:true "ocaml-freestanding";
-  ]
+let build_packages =
+  [ Functoria.package ~kind:`Global ~build:true "ocaml-freestanding" ]
 
 let runtime_packages target =
   match target with
@@ -40,22 +27,15 @@ let runtime_packages target =
       [ Functoria.package ~min:"0.7.0" ~max:"0.8.0" "mirage-solo5" ]
   | #xen_target -> [ Functoria.package ~min:"7.0.0" ~max:"8.0.0" "mirage-xen" ]
 
-let packages target = build_packages target @ runtime_packages target
-
-let cflags_path ?build_dir target =
-  let fname = Fmt.str "%a-cflags.sxp" Key.pp_target target in
-  match build_dir with
-  | None -> Fpath.v fname
-  | Some build_dir -> Fpath.(build_dir / fname)
+let packages target = build_packages @ runtime_packages target
 
 let context_name i =
   let target = Info.get i Key.target in
   Fmt.str "mirage-%a" Key.pp_target target
 
 (* OCaml freestanding build context. *)
-let build_context ?build_dir i =
+let build_context ?build_dir:_ i =
   let profile_release = Dune.stanza "(profile release)" in
-  let target = Info.get i Key.target in
   let build_context =
     Dune.stanzaf
       {|
@@ -64,13 +44,9 @@ let build_context ?build_dir i =
   (host default)
   (toolchain freestanding)
   (disable_dynamically_linked_foreign_archives true)
-  (env (_ (
-    c_flags (:include %a)
-  )))
   ))
   |}
-      (context_name i) Fpath.pp
-      (cflags_path ?build_dir target)
+      (context_name i)
   in
   [ profile_release; build_context ]
 
@@ -144,48 +120,18 @@ let out i =
   in
   public_name ^ ext target
 
-let ldflags i =
-  let target = Info.get i Key.target in
-  Dune.stanzaf
-    {|
-(rule
- (target %s)
- (action (with-stdout-to %%{target}
-  (bash "env PKG_CONFIG_PATH=$(opam config var prefix)/lib/pkgconfig pkg-config --libs solo5-libc %s")
- ))
-)
-  |}
-    (flags_file target) (build_package target)
-
-let cflags_sxp i =
-  let target = Info.get i Key.target in
-  Dune.stanzaf
-    {|
-(rule
-  (target %a)
-  (action (with-stdout-to %%{target} (progn
-    (bash "echo '('")
-    (bash "env PKG_CONFIG_PATH=$(opam config var prefix)/lib/pkgconfig pkg-config --cflags %s")
-    (bash "echo ')'")
-  )))
-)|}
-    Fpath.pp (cflags_path target) (build_package target)
-
-let link i =
-  let target = Info.get i Key.target in
-  let main = Fpath.to_string (main i) in
+let rename i =
   let out = out i in
   Dune.stanzaf
     {|
 (rule
  (target %s)
  (enabled_if (= %%{context_name} "%s"))
- (deps main.exe.o)
+ (deps main.exe)
  (action
-  (bash
-   "ld %s.exe.o -o %%{target} %%{read:%s}")))
+  (copy main.exe %%{target})))
 |}
-    out (context_name i) main (flags_file target)
+    out (context_name i)
 
 let manifest _i =
   Dune.stanzaf
@@ -201,25 +147,37 @@ let main i =
   let libraries = Info.libraries i in
   let flags = Mirage_dune.flags i in
   let main = Fpath.to_string (main i) in
+  let target = Info.get i Key.target in
   let pp_list f = Dune.compact_list f in
   Dune.stanzaf
     {|
 (executable
  (enabled_if (= %%{context_name} "%s"))
  (name %s)
- (modes (native object))
+ (modes (native exe))
  (libraries %a)
- (link_flags %a)
+ (link_flags %a -cclib --solo5-abi=%a)
  (modules (:standard \ config manifest))
  (foreign_stubs (language c) (names manifest))
 )
 |}
     (context_name i) main (pp_list "libraries") libraries (pp_list "link_flags")
-    flags
+    flags Key.pp_target target
 
 let subdir name s = Dune.stanzaf "(subdir %s\n %a)\n" name Dune.pp (Dune.v s)
 
-let dune i = [ main i; manifest i; ldflags i; cflags_sxp i; link i ]
+let alias_override i =
+  Dune.stanzaf
+    {|
+  (alias
+  (name default)
+  (enabled_if (= %%{context_name} "%s"))
+  (deps (alias_rec all))
+  )
+|}
+    (context_name i)
+
+let dune i = [ main i; manifest i; rename i; alias_override i ]
 
 let install i =
   let target = Info.get i Key.target in

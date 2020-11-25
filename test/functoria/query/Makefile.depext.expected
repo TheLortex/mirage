@@ -26,7 +26,7 @@ $(UNIKERNEL_NAME).opam.locked: $(UNIKERNEL_NAME).opam
 	$(MAKE) depext
 	$(OPAM) install ./$(UNIKERNEL_NAME)-install.opam --deps-only --yes
 	$(MAKE) repo-add
-	$(OPAM) monorepo lock --build-only && $(MAKE) repo-rm || (ret=$?; $(MAKE) repo-rm && exit $ret)
+	$(OPAM) monorepo lock --build-only $(UNIKERNEL_NAME) && $(MAKE) repo-rm || (ret=$?; $(MAKE) repo-rm && exit $ret)
 
 build::
 	dune build
