@@ -1,3 +1,38 @@
+### v4.0.0 (pending changes)
+
+Refactor build process to use [Dune](https://dune.build/) build system. The 
+motivation is to drop `ocamlbuild`-induced technical debt and to obtain 
+first-class support for _cross-compilation_. To learn more about how Dune is 
+able to perform cross-compilation, please refer to the 
+[documentation](https://dune.readthedocs.io/en/stable/cross-compilation.html).
+
+Main changes:
+
+* `dune build` is used to build unikernels. Because dune builds 
+* Two opam files are generated configure-time: 
+  - `<unikernel>-install.opam`: for global dependencies that are to be installed with opam.
+  - `<unikernrel>.opam`: for unikernel dependencies as they are to be locally fetched.
+* Unikernel dependencies are fetched in the source folder using the 
+`opam-monorepo` tool, formerly known as `duniverse`. This tool reads the 
+generated opam file and uses the opam solver to compute the transitive 
+dependency set, then fetch sources in a `duniverse/` subfolder. 
+More info on the [Github repository](https://github.com/ocamllabs/duniverse).
+Disclaimer: the project is unreleased and is subject to changes. 
+* Solo5 provides a cross-compiler that is used to pass on the freestanding 
+flags when building unikernel sources. 
+
+Breaking changes:
+
+* Unikernel dependencies need to use Dune as a build system. Other build 
+systems may be sandboxed in a Dune package, but the recommended way is to 
+switch to Dune. A set of packages have been ported to dune but not yet 
+upstreamed, they are available in this [overlay repository](https://github.com/dune-universe/opam-overlays).
+This repository can be used either by adding it in the switch configuration or
+at configure-time in Mirage: `mirage configure --extra-repo https://github.com/dune-universe/opam-overlays`.
+* To publish the unikernel as a standalone archive, the `duniverse/` folder 
+needs to be present along with source and the generated `<unikernel>-install.opam`
+file.
+
 ### v3.10.1 (2020-12-04)
 
 * Fix serialising of Mirage_key.Arg.ip_address: remove superfluous '.'

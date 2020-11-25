@@ -113,7 +113,7 @@ dev-repo: "git://dummy"
 synopsis: "Unikernel %s - main opam file"
 description: """
 It assumes that local dependencies are already
-fetched, and the mirage.context is present in the source tree.
+fetched.
 """
 
 build: [%a]
