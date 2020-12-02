@@ -76,7 +76,7 @@ depend depends::$(UNIKERNEL_NAME).opam.locked
 
 $(UNIKERNEL_NAME).opam.locked: $(UNIKERNEL_NAME).opam%a
 	$(OPAM) install ./$(UNIKERNEL_NAME)-install.opam --deps-only --yes%a
-	$(OPAM) monorepo lock --build-only%a
+	$(OPAM) monorepo lock --build-only $(UNIKERNEL_NAME)%a
 
 build::
 	dune build
