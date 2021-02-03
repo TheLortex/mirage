@@ -1,9 +1,9 @@
 * Is_file? my_app-install.opam -> false
-* Write to my_app-install.opam (481 bytes)
+* Write to my_app-install.opam (427 bytes)
 * Is_file? my_app.opam -> false
 * Write to my_app.opam (259 bytes)
 * Is_file? Makefile -> false
-* Write to Makefile (633 bytes)
+* Write to Makefile (651 bytes)
 * Is_file? dune-project -> false
 * Write to dune-project (62 bytes)
 * Is_file? dune-workspace -> false

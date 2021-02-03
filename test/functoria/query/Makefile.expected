@@ -18,7 +18,7 @@ depend depends::$(UNIKERNEL_NAME).opam.locked
 $(UNIKERNEL_NAME).opam.locked: $(UNIKERNEL_NAME).opam
 	$(MAKE) depext
 	$(OPAM) install ./$(UNIKERNEL_NAME)-install.opam --deps-only --yes
-	$(OPAM) monorepo lock --build-only
+	$(OPAM) monorepo lock --build-only $(UNIKERNEL_NAME)
 
 build::
 	dune build

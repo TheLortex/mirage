@@ -21,17 +21,8 @@
 (rule
  (target hvt-ldflags)
  (action (with-stdout-to %{target}
-  (bash "env PKG_CONFIG_PATH=$(opam config var prefix)/lib/pkgconfig pkg-config --libs solo5-libc solo5-bindings-hvt")
+  (bash "solo5-config --target=hvt --ldflags")
  ))
-)
-
-(rule
-  (target hvt-cflags.sxp)
-  (action (with-stdout-to %{target} (progn
-    (bash "echo '('")
-    (bash "env PKG_CONFIG_PATH=$(opam config var prefix)/lib/pkgconfig pkg-config --cflags solo5-bindings-hvt")
-    (bash "echo ')'")
-  )))
 )
 
 (rule
@@ -40,4 +31,10 @@
  (deps main.exe.o)
  (action
   (bash
-   "ld main.exe.o -o %{target} %{read:hvt-ldflags}")))
+   "ld main.exe.o -o %{target} %{ocaml-config:native_c_libraries} %{read:hvt-ldflags}")))
+
+(alias
+  (name default)
+  (enabled_if (= %{context_name} "mirage-hvt"))
+  (deps (alias_rec all))
+  )
