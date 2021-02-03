@@ -138,7 +138,7 @@ let ldflags i =
 (rule
  (target %s)
  (action (with-stdout-to %%{target}
-  (bash "echo -n \"%%{lib:nolibc:libnolibc.a} %%{lib:nolibc:libopenlibm.a} \" && solo5-config --target=%a --ldflags")
+  (bash "solo5-config --target=%a --ldflags")
  ))
 )
   |}
@@ -156,7 +156,7 @@ let link i =
  (deps main.exe.o)
  (action
   (bash
-   "ld %s.exe.o -o %%{target} %%{read:%s}")))
+   "ld %s.exe.o -o %%{target} %%{ocaml-config:native_c_libraries} %%{read:%s}")))
 |}
     out (context_name i) main (flags_file target)
 
