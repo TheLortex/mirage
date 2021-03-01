@@ -320,18 +320,9 @@ module Make (P : S) = struct
     (* <build-dir>/dune: rules to build the application *)
     let* () = generate_dune `Full args () in
     (* Generate application specific-files *)
-    let main = Info.main info in
     Log.info (fun m -> m "in dir %a" (Cli.pp_args (fun _ _ -> ())) args);
-    let purpose = Fmt.strf "configure: create %a" Fpath.pp main in
-    Log.info (fun m -> m "Generating: %a (main file)" Fpath.pp main);
     let* _ = Action.mkdir (config_dir args) in
-    let* () = Action.with_dir (config_dir args) (fun () ->
-        (* Main file *)
-        let* () = Action.with_output ~path:main ~append:false ~purpose (fun ppf ->
-            Fmt.pf ppf "%a@.@." Fmt.text P.prelude) in
-        let* () = configure_main info init device_graph in
-        (* Generate extra-code if needed *)
-        Engine.configure info device_graph)
+    let* () = Action.with_dir (config_dir args) (fun () -> configure_main info init device_graph)
     in
     let* _ = Action.mkdir artifacts_dir in
     let install = Key.eval (Info.context info) (Engine.install info jobs) in
