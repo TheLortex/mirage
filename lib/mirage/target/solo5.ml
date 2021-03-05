@@ -156,7 +156,7 @@ let main i =
  (name %s)
  (modes (native exe))
  (libraries %a)
- (link_flags %a -cclib --solo5-abi=%a)
+ (link_flags %a -cclib "-z solo5-abi=%a")
  (modules (:standard \ config manifest))
  (foreign_stubs (language c) (names manifest))
 )
