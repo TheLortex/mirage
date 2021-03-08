@@ -7,7 +7,9 @@ type ro = RO
 let ro = Type.v RO
 
 let crunch dirname =
-  let name = "Static_" ^ String.Ascii.lowercase dirname in
+  let is_valid = function '0' .. '9' | 'a' .. 'z' | 'A' .. 'Z' -> true | _ -> false in
+  let modname = String.filter is_valid dirname in
+  let name = "Static_" ^ String.Ascii.lowercase modname in
   let packages =
     [
       package ~min:"3.0.0" ~max:"4.0.0" "mirage-kv-mem";
